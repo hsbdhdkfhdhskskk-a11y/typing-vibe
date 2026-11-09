@@ -1,0 +1,85 @@
+from kivy.app import App
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.label import Label
+from kivy.uix.textinput import TextInput
+from kivy.core.window import Window
+
+# تحديد لون خلفية التطبيق (لون داكن مريح للعين)
+Window.clearcolor = (0.1, 0.1, 0.12, 1)
+
+class TypingApp(App):
+    def build(self):
+        # اللواصق والتخطيط الرئيسي للتطبيق
+        self.title = "Typing Vibe"
+        root = BoxLayout(orientation='vertical', padding=30, spacing=20)
+        
+        # عنوان التطبيق في الأعلى
+        self.header_lbl = Label(
+            text="[b]Typing Vibe - اختبار سرعة الكتابة[/b]",
+            markup=True,
+            font_size=24,
+            size_hint_y=None,
+            height=50,
+            color=(1, 1, 1, 1)
+        )
+        root.add_widget(self.header_lbl)
+        
+        # النص المستهدف الذي يجب على المستخدم كتابته بدقة
+        self.target_text = "Hello Omar, keep coding and building your future."
+        self.target_lbl = Label(
+            text=f"اكتب الجملة التالية:\n[color=00ffcc]{self.target_text}[/color]",
+            markup=True,
+            font_size=18,
+            size_hint_y=None,
+            height=80,
+            halign='center',
+            valign='middle'
+        )
+        self.target_lbl.bind(size=self.target_lbl.setter('text_size'))
+        root.add_widget(self.target_lbl)
+        
+        # مربع الإدخال الذي يكتب فيه المستخدم
+        self.user_input = TextInput(
+            hint_text="ابدأ الكتابة هنا...",
+            font_size=18,
+            size_hint_y=None,
+            height=50,
+            multiline=False
+        )
+        # ربط الحدث بحيث يتم فحص الكتابة تلقائياً مع كل حرف يكتبه المستخدم
+        self.user_input.bind(text=self.check_typing)
+        root.add_widget(self.user_input)
+        
+        # التنبيه أو النتيجة أسفل الشاشة
+        self.alert_lbl = Label(
+            text="",
+            markup=True,
+            font_size=16,
+            size_hint_y=None,
+            height=40,
+            color=(1, 1, 1, 1)
+        )
+        root.add_widget(self.alert_lbl)
+        
+        return root
+
+    def check_typing(self, instance, value):
+        # فحص الأخطاء والحروف أثناء الكتابة
+        has_error = False
+        
+        for i, char in enumerate(value):
+            if i < len(self.target_text):
+                if char != self.target_text[i]:
+                    has_error = True
+            else:
+                has_error = True
+
+        if has_error:
+            self.alert_lbl.text = "⚠️ انتبه، يوجد خطأ في الحروف!"
+            self.alert_lbl.color = (1, 0.18, 0.49, 1)
+        else:
+            self.alert_lbl.text = "✨ ممتاز، استمر بنفس الـ Vibe!"
+            self.alert_lbl.color = (0, 1, 0.5, 1)
+
+if __name__ == '__main__':
+    TypingApp().run()
